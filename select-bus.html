@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UITM Bus Route Finder</title>
+  <style>
+    body {
+      background-color: #5DADE2;
+      font-family: 'Comic Sans MS', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #f9f9f9;
+      border-radius: 30px;
+      margin: 30px 0;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .destination-select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 2px solid #333;
+    }
+
+    .bus-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 15px 0;
+      width: 100%;
+    }
+
+    @media (max-width: 500px) {
+      .bus-buttons {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .bus-btn {
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 10px;
+      border: 2px solid #333;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      color: black;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .bus-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .bus-a { background-color: #e8c0cb; }
+    .bus-b { background-color: #f8f5a6; }
+    .bus-c { background-color: #ff8f8f; }
+    .bus-d { background-color: #a8ddd8; }
+    .bus-e { background-color: #b5a9f0; }
+    .bus-f { background-color: #a6ddff; }
+    .bus-g { background-color: #f7c78c; }
+
+    .result-container {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background-color: #f0f0f0;
+      display: none;
+      width: 100%;
+    }
+
+    .bus-option {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 10px;
+      border: 2px solid #333;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      color: black;
+      position: relative;
+    }
+
+    .no-buses {
+      color: #d9534f;
+      font-weight: bold;
+      padding: 10px;
+    }
+    
+    .route-info {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #555;
+      text-align: left;
+    }
+    
+    .unique-tag {
+      background-color: #ffcc00;
+      color: #333;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .destination-info {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .home-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.5rem;
+      padding: 8px 20px;
+      box-shadow: 1px 1px 5px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      z-index: 100;
+    }
+
+    .home-btn:hover {
+      background-color: #eeeeee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>UITM SHAH ALAM BUS ROUTE FINDER</h1>
+    
+    <select class="destination-select" id="destinationSelect">
+      <option value="">Select your destination...</option>
+      <option value="Apartment Baiduri">Apartment Baiduri</option>
+      <option value="Apartment Palm Garden (B.B.Klang)">Apartment Palm Garden (B.B.Klang)</option>
+      <option value="Dataran Bas I-SOHO">Dataran Bas I-SOHO</option>
+      <option value="Hentian Anggerik">Hentian Anggerik</option>
+      <option value="Hentian Balai Polis Seksyen 6">Hentian Balai Polis Seksyen 6</option>
+      <option value="Hentian Bas Seksyen 2">Hentian Bas Seksyen 2</option>
+      <option value="Hentian FKPM (MASCOM)">Hentian FKPM (MASCOM)</option>
+      <option value="Hentian Flat PKNS">Hentian Flat PKNS</option>
+      <option value="Hentian FSKM">Hentian FSKM</option>
+      <option value="Hentian Hospital Shah Alam">Hentian Hospital Shah Alam</option>
+      <option value="Hentian Ken Rimba">Hentian Ken Rimba</option>
+      <option value="Hentian KTM Padang Jawa">Hentian KTM Padang Jawa</option>
+      <option value="Hentian Mawar (DC)">Hentian Mawar (DC)</option>
+      <option value="Hentian Masjid Jalan Kristal">Hentian Masjid Jalan Kristal</option>
+      <option value="Hentian Palpero">Hentian Palpero</option>
+      <option value="Hentian Perindu">Hentian Perindu</option>
+      <option value="Hentian Pusat Kesihatan">Hentian Pusat Kesihatan</option>
+      <option value="Hentian Pusat Komersial Sek. 7">Hentian Pusat Komersial Sek. 7</option>
+      <option value="Hentian Serom">Hentian Serom</option>
+      <option value="Hentian Seroja">Hentian Seroja</option>
+      <option value="Hentian Suria Jaya">Hentian Suria Jaya</option>
+      <option value="Hentian Tasik">Hentian Tasik</option>
+      <option value="Hentian Unisel">Hentian Unisel</option>
+      <option value="INTEC Sek 17">INTEC Sek 17</option>
+    </select>
+
+    <div class="bus-buttons">
+      <a href="busA.html" class="bus-btn bus-a">Bus A</a>
+      <a href="busB.html" class="bus-btn bus-b">Bus B</a>
+      <a href="busC.html" class="bus-btn bus-c">Bus C</a>
+      <a href="busD.html" class="bus-btn bus-d">Bus D</a>
+      <a href="busE.html" class="bus-btn bus-e">Bus E</a>
+      <a href="busF.html" class="bus-btn bus-f">Bus F</a>
+      <a href="busG.html" class="bus-btn bus-g">Bus G</a>
+    </div>
+    
+    <div class="result-container" id="resultContainer">
+      <div id="destinationInfo" class="destination-info"></div>
+      <h2>Available Buses:</h2>
+      <div id="busOptions"></div>
+      <div id="routeInfo" class="route-info"></div>
+    </div>
+  </div>
+
+  <button class="home-btn" onclick="window.location.href='index.html'">🏠</button>
+
+  <script>
+    // All stops and their buses
+    const destinationToBuses = {
+      "Apartment Baiduri": ["B"],
+      "Apartment Palm Garden (B.B.Klang)": ["F"],
+      "Dataran Bas I-SOHO": ["D"],
+      "Hentian Anggerik": ["A", "B", "C", "D", "E", "F", "G"],
+      "Hentian Balai Polis Seksyen 6": ["B"],
+      "Hentian Bas Seksyen 2": ["E"],
+      "Hentian FKPM (MASCOM)": ["A", "B", "C", "D", "F", "G"],
+      "Hentian Flat PKNS": ["C"],
+      "Hentian FSKM": ["B", "C", "G"],
+      "Hentian Hospital Shah Alam": ["C", "D"],
+      "Hentian Ken Rimba": ["G"],
+      "Hentian KTM Padang Jawa": ["G"],
+      "Hentian Mawar (DC)": ["A", "B", "C", "D", "E", "F", "G"],
+      "Hentian Masjid Jalan Kristal": ["C", "D"],
+      "Hentian Palpero": ["C", "D"],
+      "Hentian Perindu": ["A", "B", "C", "D", "E", "F", "G"],
+      "Hentian Pusat Kesihatan": ["A", "B", "C", "D", "E", "F", "G"],
+      "Hentian Pusat Komersial Sek. 7": ["C", "D"],
+      "Hentian Serom": ["B"],
+      "Hentian Seroja": ["A", "C", "D", "E", "F", "G"],
+      "Hentian Suria Jaya": ["G"],
+      "Hentian Tasik": ["C", "D"],
+      "Hentian Unisel": ["B"],
+      "INTEC Sek 17": ["E"]
+    };
+
+    // Unique stops (only served by one bus)
+    const uniqueStops = {
+      "B": ["Apartment Baiduri", "Hentian Balai Polis Seksyen 6", "Hentian Serom", "Hentian Unisel"],
+      "C": ["Hentian Flat PKNS"],
+      "D": ["Dataran Bas I-SOHO"],
+      "E": ["Hentian Bas Seksyen 2", "INTEC Sek 17"],
+      "F": ["Apartment Palm Garden (B.B.Klang)"],
+      "G": ["Hentian Ken Rimba", "Hentian KTM Padang Jawa", "Hentian Suria Jaya"]
+    };
+
+    const destinationSelect = document.getElementById('destinationSelect');
+    const resultContainer = document.getElementById('resultContainer');
+    const destinationInfo = document.getElementById('destinationInfo');
+    const busOptions = document.getElementById('busOptions');
+    const routeInfo = document.getElementById('routeInfo');
+
+    destinationSelect.addEventListener('change', function() {
+      const selectedDestination = this.value;
+      
+      if (selectedDestination) {
+        const buses = destinationToBuses[selectedDestination] || [];
+        
+        destinationInfo.textContent = `Destination: ${selectedDestination}`;
+        busOptions.innerHTML = '';
+        routeInfo.innerHTML = '';
+        
+        if (buses.length > 0) {
+          buses.forEach(bus => {
+            const busLink = document.createElement('a');
+            busLink.href = `bus${bus}.html`;
+            busLink.className = `bus-option bus-${bus.toLowerCase()}`;
+            busLink.textContent = `BUS ${bus}`;
+            
+            if (uniqueStops[bus] && uniqueStops[bus].includes(selectedDestination)) {
+              const uniqueTag = document.createElement('span');
+              uniqueTag.className = 'unique-tag';
+              uniqueTag.textContent = 'UNIQUE';
+              busLink.appendChild(uniqueTag);
+            }
+            
+            busOptions.appendChild(busLink);
+          });
+        } else {
+          const noBusMsg = document.createElement('div');
+          noBusMsg.className = 'no-buses';
+          noBusMsg.textContent = 'No buses available for this destination';
+          busOptions.appendChild(noBusMsg);
+        }
+        
+        resultContainer.style.display = 'block';
+      } else {
+        resultContainer.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

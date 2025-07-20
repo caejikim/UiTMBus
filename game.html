@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select a Game</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #5DADE2;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 30px;
+      text-align: center;
+      box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #154360;
+      margin-bottom: 30px;
+    }
+
+    .game-btn {
+      display: block;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      padding: 15px 20px;
+      border-radius: 20px;
+      font-size: 16px;
+      margin: 15px 0;
+      font-weight: bold;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+      transition: background 0.3s ease;
+    }
+
+    .game-btn:hover {
+      background-color: #2E86C1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 Choose a Game</h1>
+
+    <a href="memory-game.html" class="game-btn">🧠 Memory Match</a>
+    <a href="penyu-game.html" class="game-btn">🐢 Dodge The Penyu</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Locations: Bus A</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #eecad5;
+      font-family: 'Comic Sans MS', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .main-container {
+      background-color: #000000;
+      color: white;
+      border-radius: 30px;
+      width: 90%;
+      max-width: 400px;
+      margin-top: 20px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .description {
+      background-color: #fff;
+      color: #000;
+      padding: 10px;
+      border-radius: 15px;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .filter-container {
+      margin-bottom: 20px;
+    }
+
+    .filter-container select {
+      padding: 5px;
+      border-radius: 10px;
+      margin: 5px;
+      font-size: 14px;
+    }
+
+    .error-message {
+      color: #ff6b6b;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .map-container {
+      position: relative;
+      margin: 10px auto;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .map-container img {
+      width: 100%;
+      height: auto;
+      border-radius: 15px;
+    }
+
+    .updated {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .route-box {
+      background-color: #f4c4d4;
+      color: black;
+      border-radius: 15px;
+      padding: 10px;
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .route-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .route-header,
+    .route-data {
+      display: flex;
+      justify-content: space-between;
+      width: 240px;
+    }
+
+    .next-arrival {
+      background-color: #222;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: bold;
+      box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+      min-width: 75px;
+      text-align: center;
+    }
+
+    .routes-scroll {
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 5px;
+      margin-top: 10px;
+    }
+
+    .bottom-buttons {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 10px;
+}
+
+
+    .home-btn, .help-btn, .info-btn, .radio-btn, .back-btn, .game-btn {
+  background: #ffffff;
+  border: none;
+  border-radius: 15px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  width: 60px;
+  text-align: center;
+}
+
+    .help-btn {
+      font-size: 12px;
+      font-weight: bold;
+      gap: 5px;
+    }
+
+    .back-btn {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .help-btn:hover, .home-btn:hover, .info-btn:hover, .radio-btn:hover, .back-btn:hover {
+      background-color: #f2f2f2;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
+    }
+
+    .modal-content {
+      background-color: #ccc;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .channel {
+      background-color: #fff;
+      color: #000;
+      border-radius: 15px;
+      padding: 10px;
+      margin: 10px 0;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .channel:hover {
+      background-color: #eee;
+    }
+
+    .close-btn {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    audio {
+      margin-top: 15px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <h1>LOCATIONS : BUS A</h1>
+
+    <div class="description">
+      <strong>Bus A Route:</strong><br>
+      Hentian Mawar (DC) → Hentian Pusat Kesihatan → Hentian Anggerik → Hentian Perindu → Hentian Seroja → Hentian FSKM → Hentian FKPM (MASCOM)
+    </div>
+
+    <div class="filter-container">
+      <select id="departureFilter" onchange="filterRoutes()">
+        <option value="">Departure</option>
+        <option value="Hentian Mawar (DC)">Hentian Mawar (DC)</option>
+        <option value="Hentian Pusat Kesihatan">Hentian Pusat Kesihatan</option>
+        <option value="Hentian Anggerik">Hentian Anggerik</option>
+        <option value="Hentian Perindu">Hentian Perindu</option>
+        <option value="Hentian Seroja">Hentian Seroja</option>
+        <option value="Hentian FSKM">Hentian FSKM</option>
+        <option value="Hentian FKPM (MASCOM)">Hentian FKPM (MASCOM)</option>
+      </select>
+
+      <select id="arrivalFilter" onchange="filterRoutes()">
+        <option value="">Arrival</option>
+        <option value="Hentian Mawar (DC)">Hentian Mawar (DC)</option>
+        <option value="Hentian Pusat Kesihatan">Hentian Pusat Kesihatan</option>
+        <option value="Hentian Anggerik">Hentian Anggerik</option>
+        <option value="Hentian Perindu">Hentian Perindu</option>
+        <option value="Hentian Seroja">Hentian Seroja</option>
+        <option value="Hentian FSKM">Hentian FSKM</option>
+        <option value="Hentian FKPM (MASCOM)">Hentian FKPM (MASCOM)</option>
+      </select>
+    </div>
+
+    <div id="errorMessage" class="error-message">
+      Error: Departure and arrival cannot be the same!
+    </div>
+
+    <div class="map-container">
+     <img src="bus-map-A.PNG" alt="Bus Route Map" />
+ 
+    <div class="updated">LAST UPDATED : 1 MIN AGO</div>
+
+
+<div class="routes-scroll">
+  <div id="noRoutesMessage" style="display: none; color: #ff6b6b; font-weight: bold; text-align: center; margin-top: 20px;">
+    No routes available for selected combination
+  </div>
+
+  <div id="routeResults">
+    <!-- Routes will be dynamically inserted here -->
+  </div>
+</div>
+
+    <div class="bottom-buttons">
+      <button class="home-btn" onclick="window.location.href='index.html'">🏠 HOME</button>
+      <button class="back-btn" onclick="window.location.href='select-bus.html'">⬅️ BACK</button>
+      <button class="help-btn" onclick="window.location.href='help.html'">💬 HELP</button>
+      <button class="game-btn" onclick="window.location.href='game.html'">🎮 GAME</button>
+      <button class="radio-btn" onclick="openModal()" title="Radio Channels">🔊 RADIO</button>
+    </div>
+  </div>
+
+  <div id="radioModal" class="modal">
+    <div class="modal-content">
+      <h2>📻 Radio Channels</h2>
+      <div class="channel" onclick="playChannel('radio1.mp3')">🎶 Hot FM</div>
+      <div class="channel" onclick="playChannel('radio2.mp3')">🌧️ Era</div>
+      <div class="channel" onclick="playChannel('radio3.mp3')">🔥 Hitz FM</div>
+      <div class="channel" onclick="playChannel('radio4.mp3')">🌈 Sinar</div>
+      <div class="channel" onclick="playChannel('radio5.mp3')">✨ Suria</div>
+      <audio id="player" controls></audio>
+      <button class="close-btn" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // All possible routes with random times
+    const allRoutes = [
+      // Morning routes
+      { departure: "Hentian Mawar (DC)", arrival: "Hentian Pusat Kesihatan", depTime: "7:15 AM", arrTime: "7:25 AM" },
+      { departure: "Hentian Pusat Kesihatan", arrival: "Hentian Anggerik", depTime: "7:30 AM", arrTime: "7:40 AM" },
+      { departure: "Hentian Anggerik", arrival: "Hentian Perindu", depTime: "7:45 AM", arrTime: "7:55 AM" },
+      { departure: "Hentian Perindu", arrival: "Hentian Seroja", depTime: "8:00 AM", arrTime: "8:12 AM" },
+      { departure: "Hentian Seroja", arrival: "Hentian FSKM", depTime: "8:15 AM", arrTime: "8:27 AM" },
+      { departure: "Hentian FSKM", arrival: "Hentian FKPM (MASCOM)", depTime: "8:30 AM", arrTime: "8:45 AM" },
+      { departure: "Hentian FKPM (MASCOM)", arrival: "Hentian Mawar (DC)", depTime: "8:50 AM", arrTime: "9:10 AM" },
+      
+      // Reverse routes
+      { departure: "Hentian FKPM (MASCOM)", arrival: "Hentian FSKM", depTime: "9:15 AM", arrTime: "9:25 AM" },
+      { departure: "Hentian FSKM", arrival: "Hentian Seroja", depTime: "9:30 AM", arrTime: "9:42 AM" },
+      { departure: "Hentian Seroja", arrival: "Hentian Perindu", depTime: "9:45 AM", arrTime: "9:57 AM" },
+      { departure: "Hentian Perindu", arrival: "Hentian Anggerik", depTime: "10:00 AM", arrTime: "10:10 AM" },
+      { departure: "Hentian Anggerik", arrival: "Hentian Pusat Kesihatan", depTime: "10:15 AM", arrTime: "10:25 AM" },
+      { departure: "Hentian Pusat Kesihatan", arrival: "Hentian Mawar (DC)", depTime: "10:30 AM", arrTime: "10:40 AM" },
+      
+      // Afternoon routes
+      { departure: "Hentian Mawar (DC)", arrival: "Hentian Pusat Kesihatan", depTime: "12:00 PM", arrTime: "12:10 PM" },
+      { departure: "Hentian Pusat Kesihatan", arrival: "Hentian Anggerik", depTime: "12:15 PM", arrTime: "12:25 PM" },
+      { departure: "Hentian Anggerik", arrival: "Hentian Perindu", depTime: "12:30 PM", arrTime: "12:40 PM" },
+      { departure: "Hentian Perindu", arrival: "Hentian Seroja", depTime: "12:45 PM", arrTime: "12:57 PM" },
+      { departure: "Hentian Seroja", arrival: "Hentian FSKM", depTime: "1:00 PM", arrTime: "1:12 PM" },
+      { departure: "Hentian FSKM", arrival: "Hentian FKPM (MASCOM)", depTime: "1:15 PM", arrTime: "1:30 PM" },
+      { departure: "Hentian FKPM (MASCOM)", arrival: "Hentian Mawar (DC)", depTime: "1:35 PM", arrTime: "1:55 PM" },
+      
+      // More random combinations
+      { departure: "Hentian Mawar (DC)", arrival: "Hentian Anggerik", depTime: "2:00 PM", arrTime: "2:20 PM" },
+      { departure: "Hentian Anggerik", arrival: "Hentian Seroja", depTime: "2:25 PM", arrTime: "2:37 PM" },
+      { departure: "Hentian Seroja", arrival: "Hentian FKPM (MASCOM)", depTime: "2:40 PM", arrTime: "2:55 PM" },
+      { departure: "Hentian FKPM (MASCOM)", arrival: "Hentian Perindu", depTime: "3:00 PM", arrTime: "3:20 PM" },
+      { departure: "Hentian Perindu", arrival: "Hentian Pusat Kesihatan", depTime: "3:25 PM", arrTime: "3:35 PM" },
+      { departure: "Hentian Pusat Kesihatan", arrival: "Hentian Mawar (DC)", depTime: "3:40 PM", arrTime: "3:50 PM" }
+    ];
+
+    function openModal() {
+      document.getElementById('radioModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('radioModal').style.display = 'none';
+    }
+
+    function playChannel(src) {
+      const audio = document.getElementById('player');
+      audio.src = src;
+      audio.play();
+    }
+
+    function filterRoutes() {
+      const departure = document.getElementById("departureFilter").value;
+      const arrival = document.getElementById("arrivalFilter").value;
+      const errorMessage = document.getElementById("errorMessage");
+      const noRoutesMessage = document.getElementById("noRoutesMessage");
+      const routeResults = document.getElementById("routeResults");
+      
+      // Reset display
+      errorMessage.style.display = "none";
+      noRoutesMessage.style.display = "none";
+      routeResults.innerHTML = "";
+      
+      // Check if departure and arrival are the same
+      if (departure && arrival && departure === arrival) {
+        errorMessage.style.display = "block";
+        return;
+      }
+      
+      // Filter routes based on selection
+      let filteredRoutes = allRoutes;
+      
+      if (departure) {
+        filteredRoutes = filteredRoutes.filter(route => route.departure === departure);
+      }
+      
+      if (arrival) {
+        filteredRoutes = filteredRoutes.filter(route => route.arrival === arrival);
+      }
+      
+      // Display results
+      if (filteredRoutes.length === 0) {
+        noRoutesMessage.style.display = "block";
+      } else {
+        // Group by departure-arrival pairs
+        const groupedRoutes = {};
+        
+        filteredRoutes.forEach(route => {
+          const key = `${route.departure}-${route.arrival}`;
+          if (!groupedRoutes[key]) {
+            groupedRoutes[key] = [];
+          }
+          groupedRoutes[key].push(route);
+        });
+        
+        // Display each group with its schedules
+        for (const [key, routes] of Object.entries(groupedRoutes)) {
+          const [dep, arr] = key.split('-');
+          
+          const groupHeader = document.createElement('div');
+          groupHeader.style.marginTop = '20px';
+          groupHeader.style.fontWeight = 'bold';
+          groupHeader.style.fontSize = '16px';
+          groupHeader.style.textAlign = 'left';
+          groupHeader.style.color = '#fff';
+          groupHeader.textContent = `🚏 ${dep} → ${arr}`;
+          routeResults.appendChild(groupHeader);
+          
+          routes.forEach((route, index) => {
+            const routeBox = document.createElement('div');
+            routeBox.className = 'route-box';
+            routeBox.dataset.departure = route.departure;
+            routeBox.dataset.arrival = route.arrival;
+            
+            const routeContent = document.createElement('div');
+            routeContent.className = 'route-content';
+            
+            const routeHeader = document.createElement('div');
+            routeHeader.className = 'route-header';
+            routeHeader.innerHTML = '<span>DEPARTURE</span><span>ARRIVAL</span>';
+            
+            const timeData = document.createElement('div');
+            timeData.className = 'route-data';
+            timeData.innerHTML = `<span>${route.depTime}</span><span>${route.arrTime}</span>`;
+            
+            const locationData = document.createElement('div');
+            locationData.className = 'route-data';
+            locationData.innerHTML = `<span>${route.departure}</span><span>${route.arrival}</span>`;
+            
+            routeContent.appendChild(routeHeader);
+            routeContent.appendChild(timeData);
+            routeContent.appendChild(locationData);
+            
+            const nextArrival = document.createElement('div');
+            nextArrival.className = 'next-arrival';
+            
+            // Calculate next arrival time (random between 5-30 minutes)
+            const nextTime = Math.floor(Math.random() * 25) + 5;
+            nextArrival.textContent = `Next: ${nextTime} min`;
+            
+            routeBox.appendChild(routeContent);
+            routeBox.appendChild(nextArrival);
+            
+            routeResults.appendChild(routeBox);
+          });
+        }
+      }
+    }
+    
+    // Initialize with all routes showing
+    window.onload = function() {
+      // Display all routes initially
+      const routeResults = document.getElementById("routeResults");
+      
+      // Group by departure-arrival pairs
+      const groupedRoutes = {};
+      
+      allRoutes.forEach(route => {
+        const key = `${route.departure}-${route.arrival}`;
+        if (!groupedRoutes[key]) {
+          groupedRoutes[key] = [];
+        }
+        groupedRoutes[key].push(route);
+      });
+      
+      // Display each group with its schedules
+      for (const [key, routes] of Object.entries(groupedRoutes)) {
+        const [dep, arr] = key.split('-');
+        
+        const groupHeader = document.createElement('div');
+        groupHeader.style.marginTop = '20px';
+        groupHeader.style.fontWeight = 'bold';
+        groupHeader.style.fontSize = '16px';
+        groupHeader.style.textAlign = 'left';
+        groupHeader.style.color = '#fff';
+        groupHeader.textContent = `🚏 ${dep} → ${arr}`;
+        routeResults.appendChild(groupHeader);
+        
+        routes.forEach((route, index) => {
+          const routeBox = document.createElement('div');
+          routeBox.className = 'route-box';
+          routeBox.dataset.departure = route.departure;
+          routeBox.dataset.arrival = route.arrival;
+          
+          const routeContent = document.createElement('div');
+          routeContent.className = 'route-content';
+          
+          const routeHeader = document.createElement('div');
+          routeHeader.className = 'route-header';
+          routeHeader.innerHTML = '<span>DEPARTURE</span><span>ARRIVAL</span>';
+          
+          const timeData = document.createElement('div');
+          timeData.className = 'route-data';
+          timeData.innerHTML = `<span>${route.depTime}</span><span>${route.arrTime}</span>`;
+          
+          const locationData = document.createElement('div');
+          locationData.className = 'route-data';
+          locationData.innerHTML = `<span>${route.departure}</span><span>${route.arrival}</span>`;
+          
+          routeContent.appendChild(routeHeader);
+          routeContent.appendChild(timeData);
+          routeContent.appendChild(locationData);
+          
+          const nextArrival = document.createElement('div');
+          nextArrival.className = 'next-arrival';
+          
+          // Calculate next arrival time (random between 5-30 minutes)
+          const nextTime = Math.floor(Math.random() * 25) + 5;
+          nextArrival.textContent = `Next: ${nextTime} min`;
+          
+          routeBox.appendChild(routeContent);
+          routeBox.appendChild(nextArrival);
+          
+          routeResults.appendChild(routeBox);
+        });
+      }
+    };
+  </script>
+</body>
+</html>

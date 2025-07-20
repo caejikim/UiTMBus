@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🚌 Match and Win!</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0e68c;
+      color: #222;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    h3 {
+      font-weight: normal;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #controls {
+      margin-bottom: 30px;
+    }
+
+    #game-board {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .card {
+      aspect-ratio: 1 / 1;
+      background-color: #555;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: transparent;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+      pointer-events: none;
+      border-radius: 6px;
+    }
+
+    .card.revealed {
+      background-color: #fff;
+    }
+
+    .card.matched {
+      background-color: #28a745;
+      pointer-events: none;
+    }
+
+    #winMessage {
+      margin-top: 25px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #006400;
+    }
+
+    button {
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #000;
+      color: #f0e68c;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #222;
+    }
+
+    @media (max-width: 500px) {
+      #game-board {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .card {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🚌 Match and Win!</h1>
+  <h3>Feeling stressed? Turn up the volume and enjoy the music! 🎵</h3>
+
+  <div id="controls">
+    <button onclick="toggleMusic()">🔊 Play/Pause Music</button>
+    <button onclick="startGame()">🔁 Restart Route</button>
+  </div>
+
+  <div id="game-board"></div>
+  <div id="winMessage"></div>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" autoplay loop>
+    <source src="audio/bg-music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    const symbols = [
+      'red-bus.png', 'blue-bus.png', 'yellow-bus.png', 'green-bus.png',
+      'driver-bus.png', 'uitm-logo.png', 'traffic-light.png', 'bus-stop.png'
+    ];
+
+    let board = [];
+    let flippedCards = [];
+    let matchedCount = 0;
+
+    function startGame() {
+      const gameBoard = document.getElementById("game-board");
+      const winMessage = document.getElementById("winMessage");
+      gameBoard.innerHTML = '';
+      winMessage.textContent = '';
+      board = shuffle([...symbols, ...symbols]);
+      flippedCards = [];
+      matchedCount = 0;
+
+      board.forEach((symbol, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.symbol = symbol;
+        card.dataset.index = index;
+        card.innerHTML = '';
+        card.addEventListener("click", () => flipCard(card));
+        gameBoard.appendChild(card);
+      });
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function flipCard(card) {
+      if (card.classList.contains('revealed') || flippedCards.length >= 2) return;
+
+      card.classList.add('revealed');
+      const img = document.createElement('img');
+      img.src = 'images/' + card.dataset.symbol;
+      card.innerHTML = '';
+      card.appendChild(img);
+      flippedCards.push(card);
+
+      if (flippedCards.length === 2) {
+        const [first, second] = flippedCards;
+        if (first.dataset.symbol === second.dataset.symbol) {
+          first.classList.add('matched');
+          second.classList.add('matched');
+          matchedCount++;
+          if (matchedCount === symbols.length) {
+            document.getElementById("winMessage").textContent = "🎉 You matched all bus items! Route complete!";
+          }
+          flippedCards = [];
+        } else {
+          setTimeout(() => {
+            first.classList.remove('revealed');
+            second.classList.remove('revealed');
+            first.innerHTML = '';
+            second.innerHTML = '';
+            flippedCards = [];
+          }, 800);
+        }
+      }
+    }
+
+    function toggleMusic() {
+      const music = document.getElementById("bgMusic");
+      if (music.paused) {
+        music.play();
+      } else {
+        music.pause();
+      }
+    }
+
+    // Try autoplay music on page load
+    window.addEventListener('load', () => {
+      const music = document.getElementById("bgMusic");
+      music.muted = false;
+      music.play().catch(() => {
+        console.log("Autoplay blocked until user interacts.");
+      });
+    });
+
+    startGame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Help Page</title>
+  <style>
+    body {
+      background-color: #4a90e2;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      background-color: #f1f1f1;
+      width: 320px;
+      margin: 40px auto;
+      padding: 30px 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .qr-block {
+      margin: 30px 0;
+    }
+
+    .qr-block img {
+      width: 150px;
+      height: 150px;
+      border-radius: 10px;
+    }
+
+    .label {
+      margin-top: 10px;
+      font-family: 'Brush Script MT', cursive;
+      font-size: 22px;
+      color: #333;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #357abd;
+    }
+
+    .back-button {
+      margin-top: 30px;
+      /* Removed width: 100%; to make it same size as others */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Complaint QR -->
+    <div class="qr-block">
+      <img src="complaint_qr.png" alt="Complaint QR Code">
+      <div class="label">Complaint</div>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLScG7rZlPw2aimDU3EYifjAx3AR-L6aBuIYZWPPslxWwQ7kZjQ/viewform" target="_blank" class="button">Go to Complaint Form</a>
+    </div>
+
+    <!-- Feedback QR -->
+    <div class="qr-block">
+      <img src="feedback_qr.png" alt="Feedback QR Code">
+      <div class="label">Feedback</div>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfUW7S88Jljq5dNYkPva6oM4kj7jKubRyuoLoNv3KJIWJfz_g/viewform" target="_blank" class="button">Go to Feedback Form</a>
+    </div>
+
+    <!-- Back Button -->
+    <a href="index.html" class="button back-button">BACK</a>
+  </div>
+
+</body>
+</html>
